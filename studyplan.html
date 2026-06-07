@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習計畫本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0eb;
+  --paper: #faf7f3;
+  --paper2: #f2ede6;
+  --brown-light: #c9a882;
+  --brown-mid: #9c7a56;
+  --brown-dark: #6b4e2e;
+  --brown-deep: #3e2c1a;
+  --brown-pale: #e8ddd0;
+  --text: #3e2c1a;
+  --text-soft: #7a6150;
+  --text-mute: #a89080;
+  --border: #d6c8b8;
+  --shadow: rgba(62,44,26,0.12);
+  --accent: #8b6340;
+  --radius: 8px;
+  --font-serif: 'Noto Serif TC', 'Lora', serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-serif);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{font-family:var(--font-serif);cursor:pointer}
+input,textarea,select{font-family:var(--font-serif)}
+
+/* ===== TOP NAV ===== */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:52px;
+  background:var(--paper);border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px var(--shadow);
+}
+#nav-title{font-size:1.1rem;font-weight:600;color:var(--brown-dark);letter-spacing:.08em}
+#nav-btns{display:flex;gap:6px}
+.nav-btn{
+  border:1px solid var(--border);background:transparent;
+  padding:5px 13px;border-radius:20px;font-size:.82rem;
+  color:var(--text-soft);transition:all .2s;letter-spacing:.04em;
+}
+.nav-btn:hover,.nav-btn.active{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+
+/* ===== VIEWS ===== */
+.view{display:none;padding-top:52px;min-height:100vh}
+.view.active{display:block}
+
+/* ===== CALENDAR ===== */
+#cal-wrap{max-width:700px;margin:0 auto;padding:20px 16px}
+#cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+#cal-header h2{font-size:1.25rem;font-weight:500;color:var(--brown-dark)}
+.cal-nav-btn{
+  border:1px solid var(--border);background:var(--paper);
+  width:34px;height:34px;border-radius:50%;font-size:.9rem;
+  color:var(--text-soft);display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.cal-nav-btn:hover{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+#cal-year-month{display:flex;gap:8px;align-items:center}
+#cal-year-select,#cal-month-select{
+  border:1px solid var(--border);background:var(--paper);
+  padding:4px 8px;border-radius:6px;font-size:.9rem;color:var(--text);
+  appearance:none;-webkit-appearance:none;text-align:center;
+}
+.cal-grid-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.cal-dow{text-align:center;font-size:.75rem;color:var(--text-mute);padding:4px 0;letter-spacing:.05em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day{
+  aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;position:relative;
+  transition:background .15s;user-select:none;border:1px solid transparent;
+  padding:2px;min-height:44px;
+}
+.cal-day:hover{background:var(--brown-pale)}
+.cal-day.other-month .cal-day-num{color:var(--text-mute);opacity:.5}
+.cal-day.today .cal-day-num{
+  background:var(--brown-dark);color:#fff;
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.cal-day.selected{background:var(--brown-pale);border-color:var(--brown-light)}
+.cal-day-num{font-size:.85rem;line-height:1}
+.cal-day-dots{display:flex;gap:2px;margin-top:2px;justify-content:center;flex-wrap:wrap}
+.dot-event{width:6px;height:6px;border-radius:50%;background:var(--brown-light);border:1.5px solid var(--brown-light)}
+.dot-schedule{width:6px;height:6px;border-radius:50%;background:var(--brown-dark)}
+
+/* DAY DETAIL */
+#day-detail{
+  max-width:700px;margin:12px auto 0;padding:0 16px 30px;
+}
+#day-detail-inner{
+  background:var(--paper);border:1px solid var(--border);border-radius:12px;
+  padding:16px;min-height:80px;
+}
+#day-detail-title{font-size:.95rem;font-weight:500;color:var(--brown-dark);margin-bottom:10px}
+.day-event-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;border-radius:6px;margin-bottom:6px;
+  background:var(--brown-pale);border-left:3px solid var(--brown-light);
+}
+.day-event-name{font-size:.85rem;color:var(--text)}
+.day-event-del{border:none;background:none;color:var(--text-mute);font-size:.8rem;padding:2px 6px;border-radius:4px}
+.day-event-del:hover{background:var(--border);color:var(--brown-dark)}
+#add-event-btn{
+  margin-top:10px;border:1px dashed var(--border);background:transparent;
+  width:100%;padding:8px;border-radius:8px;font-size:.82rem;color:var(--text-soft);
+  transition:all .18s;
+}
+#add-event-btn:hover{background:var(--brown-pale);border-color:var(--brown-light)}
+#go-schedule-btn{
+  margin-top:8px;border:1px solid var(--brown-light);background:transparent;
+  width:100%;padding:8px;border-radius:8px;font-size:.82rem;color:var(--brown-dark);
+  transition:all .18s;
+}
+#go-schedule-btn:hover{background:var(--brown-dark);color:#fff}
+
+/* ===== SCHEDULE ===== */
+#sched-wrap{max-width:900px;margin:0 auto;padding:16px}
+#sched-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+#sched-header h2{font-size:1.1rem;font-weight:500;color:var(--brown-dark)}
+#sched-week-nav{display:flex;gap:6px;align-items:center}
+#sched-week-label{font-size:.82rem;color:var(--text-soft);min-width:130px;text-align:center}
+.sched-nav-btn{
+  border:1px solid var(--border);background:var(--paper);
+  padding:4px 12px;border-radius:16px;font-size:.8rem;color:var(--text-soft);
+  transition:all .15s;
+}
+.sched-nav-btn:hover{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+#sched-add-btn{
+  border:1px solid var(--brown-light);background:transparent;
+  padding:5px 14px;border-radius:16px;font-size:.82rem;color:var(--brown-dark);
+  transition:all .15s;
+}
+#sched-add-btn:hover{background:var(--brown-dark);color:#fff}
+#sched-grid-container{overflow-x:auto}
+#sched-grid{
+  display:grid;min-width:580px;
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  background:var(--paper);
+}
+.sched-col-header{
+  background:var(--paper2);border-bottom:1px solid var(--border);
+  padding:8px 4px;text-align:center;font-size:.75rem;color:var(--text-soft);
+}
+.sched-col-header .sched-dow{font-weight:600;color:var(--brown-dark)}
+.sched-col-header .sched-date{font-size:.7rem;margin-top:2px}
+.sched-time-col{
+  background:var(--paper2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+}
+.sched-time-cell{
+  height:40px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:flex-end;
+  padding:2px 6px 0 0;font-size:.65rem;color:var(--text-mute);
+  flex-shrink:0;
+}
+.sched-day-col{
+  position:relative;border-right:1px solid var(--border);
+}
+.sched-day-col:last-child{border-right:none}
+.sched-hour-line{
+  position:absolute;left:0;right:0;border-top:1px solid var(--border);
+  pointer-events:none;
+}
+.sched-hour-half{
+  position:absolute;left:0;right:0;border-top:1px dashed var(--brown-pale);
+  pointer-events:none;
+}
+.sched-event{
+  position:absolute;left:2px;right:2px;border-radius:5px;
+  background:var(--brown-pale);border-left:3px solid var(--brown-mid);
+  padding:2px 5px;overflow:hidden;cursor:pointer;z-index:2;
+  transition:opacity .15s;
+}
+.sched-event:hover{opacity:.85}
+.sched-event.type-goal{border-left-color:var(--brown-dark);background:#e8ddd0}
+.sched-event-name{font-size:.7rem;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sched-event-time{font-size:.62rem;color:var(--text-soft)}
+.sched-click-zone{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;cursor:cell}
+
+/* ===== BOOKSHELF ===== */
+#shelf-wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+#shelf-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+#shelf-top h2{font-size:1.1rem;font-weight:500;color:var(--brown-dark)}
+#add-shelf-btn,#add-book-btn{
+  border:1px solid var(--brown-light);background:transparent;
+  padding:5px 14px;border-radius:16px;font-size:.8rem;color:var(--brown-dark);
+  transition:all .15s;margin-left:6px;
+}
+#add-shelf-btn:hover,#add-book-btn:hover{background:var(--brown-dark);color:#fff}
+#shelves-container{display:flex;flex-direction:column;gap:28px}
+.shelf-unit{
+  background:var(--brown-deep);border-radius:10px;padding:16px 16px 10px;
+  box-shadow:0 4px 16px var(--shadow);
+}
+.shelf-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.shelf-name{
+  color:#e8d8c4;font-size:.92rem;font-weight:500;letter-spacing:.05em;
+  border:none;background:transparent;width:180px;cursor:text;
+}
+.shelf-name:focus{outline:none;border-bottom:1px solid var(--brown-light)}
+.shelf-row{
+  background:var(--brown-dark);border-radius:6px;
+  min-height:110px;display:flex;align-items:flex-end;
+  padding:8px 10px 0;gap:6px;position:relative;
+  border-top:4px solid var(--brown-mid);
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,.2);
+  flex-wrap:wrap;
+}
+.book-spine{
+  width:28px;height:90px;border-radius:3px 3px 0 0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;
+  box-shadow:2px 0 6px rgba(0,0,0,.25),inset -2px 0 4px rgba(255,255,255,.08);
+  transition:transform .15s;
+  writing-mode:vertical-rl;text-orientation:mixed;
+}
+.book-spine:hover{transform:translateY(-6px)}
+.book-spine-text{
+  font-size:.6rem;color:rgba(255,255,255,.9);text-align:center;
+  overflow:hidden;max-height:75px;word-break:break-all;line-height:1.3;
+  letter-spacing:.05em;padding:0 2px;
+}
+.shelf-add-spot{
+  width:28px;height:90px;border:1.5px dashed rgba(200,170,130,.3);
+  border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:rgba(200,170,130,.4);font-size:1rem;flex-shrink:0;transition:all .15s;
+}
+.shelf-add-spot:hover{border-color:var(--brown-light);color:var(--brown-light)}
+.shelf-board{
+  width:100%;height:8px;background:var(--brown-deep);border-radius:0 0 4px 4px;
+  margin-top:2px;box-shadow:0 3px 6px rgba(0,0,0,.3);
+}
+
+/* SHELF DETAIL */
+#shelf-detail-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(62,44,26,.5);backdrop-filter:blur(2px);
+  align-items:center;justify-content:center;
+}
+#shelf-detail-overlay.open{display:flex}
+#shelf-detail-panel{
+  background:var(--paper);border-radius:14px;width:min(90vw,560px);
+  max-height:80vh;overflow-y:auto;padding:24px;
+  box-shadow:0 8px 40px rgba(0,0,0,.25);
+}
+#shelf-detail-title{font-size:1rem;font-weight:600;color:var(--brown-dark);margin-bottom:16px}
+#shelf-detail-books{display:flex;flex-wrap:wrap;gap:12px}
+.shelf-book-card{
+  width:80px;cursor:pointer;text-align:center;
+}
+.shelf-book-cover{
+  width:80px;height:110px;border-radius:4px 8px 8px 4px;
+  display:flex;align-items:center;justify-content:center;padding:8px;
+  box-shadow:3px 3px 8px rgba(0,0,0,.2),-1px 0 0 rgba(0,0,0,.15);
+  transition:transform .15s;position:relative;overflow:hidden;
+}
+.shelf-book-cover:hover{transform:scale(1.05)}
+.shelf-book-cover::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:rgba(0,0,0,.15);
+}
+.shelf-book-cover-title{font-size:.65rem;color:#fff;text-align:center;word-break:break-all;position:relative;z-index:1;font-weight:500}
+.shelf-book-name{font-size:.7rem;color:var(--text-soft);margin-top:5px;word-break:break-all;line-height:1.3}
+.shelf-book-progress{font-size:.65rem;color:var(--text-mute);margin-top:2px}
+
+/* ===== BOOK VIEW ===== */
+#book-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:var(--bg);flex-direction:column;
+}
+#book-overlay.open{display:flex}
+#book-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  background:var(--paper);height:48px;
+}
+#book-topbar-title{font-size:.9rem;font-weight:500;color:var(--brown-dark)}
+#book-close{
+  border:1px solid var(--border);background:transparent;
+  padding:4px 12px;border-radius:14px;font-size:.78rem;color:var(--text-soft);
+}
+#book-close:hover{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+#book-main{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+#book-spread{
+  display:flex;width:min(900px,95vw);height:calc(100vh - 100px);
+  max-height:620px;position:relative;
+  box-shadow:0 8px 40px rgba(0,0,0,.3);
+}
+.book-page{
+  flex:1;background:var(--paper);overflow-y:auto;
+  padding:24px 20px;position:relative;
+}
+.book-page.left{border-right:1px solid var(--border);border-radius:6px 0 0 6px}
+.book-page.right{border-radius:0 6px 6px 0}
+.book-spine-divider{
+  width:8px;background:linear-gradient(to right,#c9a882,#9c7a56,#c9a882);
+  box-shadow:0 0 8px rgba(0,0,0,.2);flex-shrink:0;
+}
+.page-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
+  background:var(--paper);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:10;font-size:.9rem;color:var(--text-soft);
+  transition:all .15s;box-shadow:0 2px 8px var(--shadow);
+}
+.page-arrow:hover{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+#page-prev{left:-16px}
+#page-next{right:-16px}
+#book-page-num{
+  text-align:center;font-size:.72rem;color:var(--text-mute);margin-top:6px;
+}
+/* Cover page */
+.cover-title{font-size:1.5rem;font-weight:600;color:var(--brown-dark);margin-bottom:12px;text-align:center}
+.cover-progress-bar-wrap{margin:16px 0 8px}
+.cover-progress-label{font-size:.75rem;color:var(--text-soft);margin-bottom:4px}
+.cover-progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.cover-progress-fill{height:100%;background:var(--brown-dark);border-radius:3px;transition:width .4s}
+.book-desc-box{
+  border:1px solid var(--border);border-radius:8px;padding:12px;
+  font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-top:12px;
+  min-height:60px;background:var(--paper2);
+}
+/* TOC page */
+.toc-title{font-size:1rem;font-weight:600;color:var(--brown-dark);margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.toc-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;border-radius:6px;cursor:pointer;margin-bottom:4px;
+  transition:background .15s;
+}
+.toc-item:hover{background:var(--brown-pale)}
+.toc-item.sub{padding-left:24px}
+.toc-item-label{font-size:.82rem;color:var(--text)}
+.toc-item.sub .toc-item-label{font-size:.78rem;color:var(--text-soft)}
+.toc-check{font-size:.85rem;color:var(--brown-dark);margin-left:8px;min-width:16px;text-align:right}
+/* Chapter page */
+.chap-title{font-size:1rem;font-weight:600;color:var(--brown-dark);margin-bottom:12px}
+.chap-info-box{
+  border:1px solid var(--border);border-radius:8px;padding:12px;
+  font-size:.78rem;color:var(--text-soft);line-height:1.8;
+  background:var(--paper2);
+}
+.chap-field{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.chap-field label{font-size:.7rem;color:var(--text-mute);letter-spacing:.04em}
+.chap-field input,.chap-field textarea,.chap-field select{
+  border:none;border-bottom:1px solid var(--border);background:transparent;
+  padding:2px 0;font-size:.78rem;color:var(--text);width:100%;resize:none;
+}
+.chap-field input:focus,.chap-field textarea:focus{outline:none;border-bottom-color:var(--brown-mid)}
+.chap-divider{border:none;border-top:1px dashed var(--border);margin:8px 0}
+.chap-status-btn{
+  border:1px solid var(--border);background:transparent;
+  padding:4px 14px;border-radius:14px;font-size:.75rem;color:var(--text-soft);
+  cursor:pointer;transition:all .15s;float:right;
+}
+.chap-status-btn.done{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+/* Note page */
+.note-area{
+  width:100%;height:calc(100% - 40px);border:none;resize:none;
+  background:transparent;font-size:.82rem;color:var(--text);
+  line-height:2;background-image:repeating-linear-gradient(transparent,transparent 31px,var(--border) 31px,var(--border) 32px);
+  padding-top:6px;
+}
+.note-area:focus{outline:none}
+.note-pen{
+  position:absolute;top:12px;right:12px;font-size:1.4rem;cursor:pointer;
+  filter:sepia(100%);opacity:.7;transition:opacity .15s;
+  user-select:none;
+}
+.note-pen:hover{opacity:1}
+.note-pen.active{opacity:1}
+.note-area[readonly]{cursor:default;color:var(--text-soft)}
+
+/* ===== PLAN ===== */
+#plan-wrap{max-width:700px;margin:0 auto;padding:20px 16px 40px}
+#plan-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+#plan-top h2{font-size:1.1rem;font-weight:500;color:var(--brown-dark)}
+#add-plan-btn,#add-plan-cat-btn{
+  border:1px solid var(--brown-light);background:transparent;
+  padding:5px 12px;border-radius:16px;font-size:.8rem;color:var(--brown-dark);
+  transition:all .15s;margin-left:6px;
+}
+#add-plan-btn:hover,#add-plan-cat-btn:hover{background:var(--brown-dark);color:#fff}
+.plan-cat{margin-bottom:20px}
+.plan-cat-title{
+  font-size:.88rem;font-weight:600;color:var(--brown-dark);
+  margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.plan-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;border-radius:8px;margin-bottom:6px;
+  background:var(--paper);border:1px solid var(--border);
+  transition:background .15s;
+}
+.plan-item:hover{background:var(--brown-pale)}
+.plan-cb{
+  width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border);
+  flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;background:transparent;
+}
+.plan-cb.checked{background:var(--brown-dark);border-color:var(--brown-dark)}
+.plan-cb.checked::after{content:'✓';font-size:.7rem;color:#fff}
+.plan-item-body{flex:1}
+.plan-item-title{font-size:.85rem;color:var(--text);font-weight:500}
+.plan-item-title.done{text-decoration:line-through;color:var(--text-mute)}
+.plan-item-meta{font-size:.72rem;color:var(--text-mute);margin-top:3px}
+.plan-item-del{
+  border:none;background:none;color:var(--text-mute);font-size:.75rem;
+  padding:2px 6px;border-radius:4px;cursor:pointer;flex-shrink:0;
+}
+.plan-item-del:hover{background:var(--border);color:var(--brown-dark)}
+
+/* ===== MODALS ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(62,44,26,.5);backdrop-filter:blur(2px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--paper);border-radius:14px;width:min(92vw,420px);
+  padding:24px;box-shadow:0 8px 40px rgba(0,0,0,.25);
+}
+.modal-title{font-size:1rem;font-weight:600;color:var(--brown-dark);margin-bottom:16px}
+.modal-field{margin-bottom:12px;display:flex;flex-direction:column;gap:5px}
+.modal-field label{font-size:.78rem;color:var(--text-soft);letter-spacing:.04em}
+.modal-field input,.modal-field textarea,.modal-field select{
+  border:1px solid var(--border);background:var(--paper2);
+  padding:7px 10px;border-radius:7px;font-size:.85rem;color:var(--text);width:100%;resize:none;
+}
+.modal-field input:focus,.modal-field textarea:focus,.modal-field select:focus{
+  outline:none;border-color:var(--brown-mid);
+}
+.modal-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.modal-btn{
+  padding:7px 18px;border-radius:20px;font-size:.82rem;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:var(--text-soft);
+  transition:all .15s;
+}
+.modal-btn.primary{background:var(--brown-dark);color:#fff;border-color:var(--brown-dark)}
+.modal-btn:hover{opacity:.85}
+.modal-row{display:flex;gap:10px}
+.modal-row .modal-field{flex:1}
+input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--brown-dark)}
+.modal-check-row{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-soft)}
+
+/* Goal picker modal */
+#goal-pick-overlay .modal-box{width:min(92vw,500px)}
+.book-pick-list{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.book-pick-item{
+  border:1px solid var(--border);border-radius:8px;padding:8px 12px;
+  cursor:pointer;font-size:.8rem;color:var(--text-soft);transition:all .15s;
+}
+.book-pick-item:hover,.book-pick-item.sel{background:var(--brown-pale);border-color:var(--brown-mid);color:var(--text)}
+.toc-pick-list{display:flex;flex-direction:column;gap:4px}
+.toc-pick-item{
+  border:1px solid var(--border);border-radius:6px;padding:7px 12px;
+  cursor:pointer;font-size:.8rem;color:var(--text-soft);transition:all .15s;
+}
+.toc-pick-item:hover{background:var(--brown-pale);color:var(--text)}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  #book-spread{flex-direction:column;height:auto;max-height:none}
+  .book-page.left,.book-page.right{border-radius:0}
+  .book-page.left{border-right:none;border-bottom:1px solid var(--border)}
+  .book-spine-divider{width:100%;height:6px}
+  #page-prev{left:4px}
+  #page-next{right:4px}
+  .shelf-row{flex-wrap:nowrap;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav id="topnav">
+  <span id="nav-title">學習計畫本</span>
+  <div id="nav-btns">
+    <button class="nav-btn" onclick="showView('calendar')">日曆</button>
+    <button class="nav-btn" onclick="showView('schedule')">日程表</button>
+    <button class="nav-btn" onclick="showView('shelf')">書櫃</button>
+    <button class="nav-btn" onclick="showView('plan')">計畫</button>
+  </div>
+</nav>
+
+<!-- CALENDAR VIEW -->
+<div id="view-calendar" class="view active">
+  <div id="cal-wrap">
+    <div id="cal-header">
+      <button class="cal-nav-btn" onclick="calShiftMonth(-1)">◂</button>
+      <div id="cal-year-month">
+        <select id="cal-year-select" onchange="calGoTo()"></select>
+        <select id="cal-month-select" onchange="calGoTo()">
+          <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option>
+          <option value="3">4月</option><option value="4">5月</option><option value="5">6月</option>
+          <option value="6">7月</option><option value="7">8月</option><option value="8">9月</option>
+          <option value="9">10月</option><option value="10">11月</option><option value="11">12月</option>
+        </select>
+      </div>
+      <button class="cal-nav-btn" onclick="calShiftMonth(1)">▸</button>
+    </div>
+    <div class="cal-grid-head">
+      <div class="cal-dow">一</div><div class="cal-dow">二</div><div class="cal-dow">三</div>
+      <div class="cal-dow">四</div><div class="cal-dow">五</div><div class="cal-dow">六</div>
+      <div class="cal-dow">日</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+  <div id="day-detail">
+    <div id="day-detail-inner">
+      <div id="day-detail-title">請點選日期</div>
+      <div id="day-events-list"></div>
+      <button id="add-event-btn" onclick="openAddEventModal()" style="display:none">＋ 新增行程</button>
+      <button id="go-schedule-btn" onclick="goToScheduleFromCal()" style="display:none">→ 開啟日程表</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE VIEW -->
+<div id="view-schedule" class="view">
+  <div id="sched-wrap">
+    <div id="sched-header">
+      <h2>日程表</h2>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <div id="sched-week-nav">
+          <button class="sched-nav-btn" onclick="schedShiftWeek(-1)">◂ 上週</button>
+          <span id="sched-week-label"></span>
+          <button class="sched-nav-btn" onclick="schedShiftWeek(1)">下週 ▸</button>
+        </div>
+        <button class="sched-nav-btn" onclick="schedGoToday()">本週</button>
+        <button id="sched-add-btn" onclick="openSchedModal()">＋ 新增行程</button>
+      </div>
+    </div>
+    <div id="sched-grid-container">
+      <div id="sched-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SHELF VIEW -->
+<div id="view-shelf" class="view">
+  <div id="shelf-wrap">
+    <div id="shelf-top">
+      <h2>書櫃</h2>
+      <div>
+        <button id="add-shelf-btn" onclick="addShelf()">＋ 書櫃格</button>
+        <button id="add-book-btn" onclick="openAddBookModal()">＋ 新增書籍</button>
+      </div>
+    </div>
+    <div id="shelves-container"></div>
+  </div>
+</div>
+
+<!-- PLAN VIEW -->
+<div id="view-plan" class="view">
+  <div id="plan-wrap">
+    <div id="plan-top">
+      <h2>計畫</h2>
+      <div>
+        <button id="add-plan-cat-btn" onclick="openAddCatModal()">＋ 新增分類</button>
+        <button id="add-plan-btn" onclick="openAddPlanModal()">＋ 新增計畫</button>
+      </div>
+    </div>
+    <div id="plan-list"></div>
+  </div>
+</div>
+
+<!-- SHELF DETAIL OVERLAY -->
+<div id="shelf-detail-overlay">
+  <div id="shelf-detail-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div id="shelf-detail-title"></div>
+      <button class="modal-btn" onclick="closeShelfDetail()">關閉</button>
+    </div>
+    <div id="shelf-detail-books"></div>
+    <div id="shelf-detail-manage" style="margin-top:14px;font-size:.78rem;color:var(--text-mute)"></div>
+  </div>
+</div>
+
+<!-- BOOK OVERLAY -->
+<div id="book-overlay">
+  <div id="book-topbar">
+    <span id="book-topbar-title"></span>
+    <button id="book-close" onclick="closeBook()">✕ 關閉</button>
+  </div>
+  <div id="book-main">
+    <div style="position:relative">
+      <button class="page-arrow" id="page-prev" onclick="bookFlip(-1)">◂</button>
+      <div id="book-spread"></div>
+      <button class="page-arrow" id="page-next" onclick="bookFlip(1)">▸</button>
+    </div>
+  </div>
+  <div id="book-page-num"></div>
+</div>
+
+<!-- MODALS -->
+<!-- Add Event -->
+<div class="modal-overlay" id="add-event-overlay">
+  <div class="modal-box">
+    <div class="modal-title">新增行程</div>
+    <div class="modal-field"><label>行程名稱</label><input id="ev-name" type="text" placeholder="行程名稱"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('add-event-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="saveEvent()">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Schedule -->
+<div class="modal-overlay" id="sched-modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="sched-modal-title">新增行程</div>
+    <div class="modal-field"><label>行程名稱</label><input id="sm-name" type="text" placeholder="行程名稱"></div>
+    <div class="modal-row">
+      <div class="modal-field"><label>日期</label><input id="sm-date" type="date"></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>開始時間</label><input id="sm-start" type="time" step="600"></div>
+      <div class="modal-field"><label>結束時間</label><input id="sm-end" type="time" step="600"></div>
+    </div>
+    <div class="modal-field">
+      <label>重複</label>
+      <select id="sm-repeat">
+        <option value="none">不重複</option>
+        <option value="daily">每日</option>
+        <option value="weekly">每週</option>
+        <option value="monthly">每月</option>
+      </select>
+    </div>
+    <div class="modal-field"><label>備註</label><textarea id="sm-note" rows="2" placeholder="備註（選填）"></textarea></div>
+    <input type="hidden" id="sm-edit-id">
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('sched-modal-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="saveSchedEvent()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Book -->
+<div class="modal-overlay" id="add-book-overlay">
+  <div class="modal-box">
+    <div class="modal-title">新增書籍</div>
+    <div class="modal-field"><label>書名</label><input id="bk-name" type="text" placeholder="書名"></div>
+    <div class="modal-field"><label>簡介</label><textarea id="bk-desc" rows="3" placeholder="簡介（選填）"></textarea></div>
+    <div class="modal-field">
+      <label>書脊顏色</label>
+      <div id="bk-color-picks" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div>
+    </div>
+    <div class="modal-field">
+      <label>放入書櫃</label>
+      <select id="bk-shelf-select"></select>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('add-book-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="saveBook()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Chapter -->
+<div class="modal-overlay" id="add-chap-overlay">
+  <div class="modal-box">
+    <div class="modal-title">新增目錄</div>
+    <div class="modal-field"><label>標題</label><input id="chap-title-in" type="text" placeholder="目錄名稱"></div>
+    <div class="modal-field">
+      <label>類型</label>
+      <select id="chap-type-in">
+        <option value="main">主目錄</option>
+        <option value="sub">次目錄</option>
+      </select>
+    </div>
+    <input type="hidden" id="chap-book-id">
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('add-chap-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="saveChapter()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Plan -->
+<div class="modal-overlay" id="add-plan-overlay">
+  <div class="modal-box">
+    <div class="modal-title">新增計畫</div>
+    <div class="modal-field"><label>計畫名稱</label><input id="pl-name" type="text" placeholder="計畫名稱"></div>
+    <div class="modal-field">
+      <label>分類</label>
+      <select id="pl-cat-select"></select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>預估時長（小時）</label><input id="pl-dur" type="number" min="0" step="0.5" placeholder="選填"></div>
+      <div class="modal-field"><label>完成期限</label><input id="pl-deadline" type="date"></div>
+    </div>
+    <div class="modal-field"><label>備註</label><textarea id="pl-note" rows="2" placeholder="選填"></textarea></div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('add-plan-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="savePlan()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category -->
+<div class="modal-overlay" id="add-cat-overlay">
+  <div class="modal-box">
+    <div class="modal-title">新增分類</div>
+    <div class="modal-field"><label>分類名稱</label><input id="cat-name-in" type="text" placeholder="分類名稱"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('add-cat-overlay')">取消</button>
+      <button class="modal-btn primary" onclick="saveCategory()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Goal Pick Modal -->
+<div class="modal-overlay" id="goal-pick-overlay">
+  <div class="modal-box">
+    <div class="modal-title">選擇目標</div>
+    <p style="font-size:.8rem;color:var(--text-soft);margin-bottom:12px">選擇要連結的書籍與目錄</p>
+    <div id="gp-books" class="book-pick-list"></div>
+    <div id="gp-tocs" class="toc-pick-list" style="display:none"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal('goal-pick-overlay')">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// DATA STORE
+// =====================================================
+const KEY = 'study_planner_v1';
+let DB = loadDB();
+
+function loadDB(){
+  try{
+    const s = localStorage.getItem(KEY);
+    if(s) return JSON.parse(s);
+  }catch(e){}
+  return {
+    events:{},       // {dateStr:[{id,name},...]}
+    schedEvents:[],  // [{id,name,date,start,end,repeat,note,type,goalRef}]
+    books:[],        // [{id,name,desc,color,shelfId,chapters:[{id,title,type,done,task,dur,deadline,execTime,execDate,note,noteContent}]}]
+    shelves:[],      // [{id,name,bookIds:[]}]  bookIds = display order (max 6)
+    plans:[],        // [{id,name,catId,dur,deadline,note,done,doneAt}]
+    cats:[{id:'default',name:'未分類'}],
+  };
+}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(DB));}
+let _uid=Date.now();
+function uid(){return (++_uid).toString(36);}
+
+// =====================================================
+// VIEW SWITCHING
+// =====================================================
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  const map={calendar:0,schedule:1,shelf:2,plan:3};
+  document.querySelectorAll('.nav-btn')[map[name]]?.classList.add('active');
+  if(name==='calendar') renderCalendar();
+  if(name==='schedule') renderSchedule();
+  if(name==='shelf') renderShelves();
+  if(name==='plan') renderPlans();
+}
+
+// =====================================================
+// CALENDAR
+// =====================================================
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+let selDate=null;
+
+function initCalYearSelect(){
+  const s=document.getElementById('cal-year-select');
+  s.innerHTML='';
+  for(let y=calYear-5;y<=calYear+10;y++){
+    const o=document.createElement('option');
+    o.value=y;o.textContent=y+'年';
+    if(y===calYear)o.selected=true;
+    s.appendChild(o);
+  }
+}
+function calGoTo(){
+  calYear=+document.getElementById('cal-year-select').value;
+  calMonth=+document.getElementById('cal-month-select').value;
+  renderCalendar();
+}
+function calShiftMonth(d){
+  calMonth+=d;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
+  document.getElementById('cal-year-select').value=calYear;
+  document.getElementById('cal-month-select').value=calMonth;
+  renderCalendar();
+}
+
+function renderCalendar(){
+  initCalYearSelect();
+  document.getElementById('cal-year-select').value=calYear;
+  document.getElementById('cal-month-select').value=calMonth;
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML='';
+  const today=new Date();
+  const first=new Date(calYear,calMonth,1);
+  // Monday-start: 0=Mon
+  let startDow=first.getDay(); // 0=Sun
+  startDow=(startDow+6)%7; // 0=Mon
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  const total=Math.ceil((startDow+daysInMonth)/7)*7;
+  for(let i=0;i<total;i++){
+    const cell=document.createElement('div');
+    cell.className='cal-day';
+    let day,isOther=false,cellYear=calYear,cellMonth=calMonth;
+    if(i<startDow){day=prevDays-startDow+i+1;isOther=true;cellMonth=calMonth-1;if(cellMonth<0){cellMonth=11;cellYear--;}}
+    else if(i>=startDow+daysInMonth){day=i-startDow-daysInMonth+1;isOther=true;cellMonth=calMonth+1;if(cellMonth>11){cellMonth=0;cellYear++;}}
+    else{day=i-startDow+1;}
+    if(isOther)cell.classList.add('other-month');
+    const dateStr=`${cellYear}-${String(cellMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday=today.getFullYear()===cellYear&&today.getMonth()===cellMonth&&today.getDate()===day;
+    if(isToday)cell.classList.add('today');
+    if(selDate===dateStr)cell.classList.add('selected');
+    const numEl=document.createElement('div');
+    numEl.className='cal-day-num';numEl.textContent=day;
+    cell.appendChild(numEl);
+    // dots
+    const evs=DB.events[dateStr]||[];
+    const schedEvs=getSchedEventsForDate(dateStr);
+    if(evs.length||schedEvs.length){
+      const dots=document.createElement('div');dots.className='cal-day-dots';
+      evs.forEach(()=>{const d=document.createElement('div');d.className='dot-event';dots.appendChild(d);});
+      schedEvs.forEach(()=>{const d=document.createElement('div');d.className='dot-schedule';dots.appendChild(d);});
+      cell.appendChild(dots);
+    }
+    cell.addEventListener('click',()=>selectDate(dateStr));
+    cell.addEventListener('dblclick',()=>{selectDate(dateStr);goToScheduleFromCal();});
+    grid.appendChild(cell);
+  }
+}
+
+function getSchedEventsForDate(dateStr){
+  return DB.schedEvents.filter(e=>{
+    if(e.date===dateStr)return true;
+    if(e.repeat==='daily')return true;
+    if(e.repeat==='weekly'){
+      const d1=new Date(e.date),d2=new Date(dateStr);
+      return d1.getDay()===d2.getDay()&&d2>=d1;
+    }
+    if(e.repeat==='monthly'){
+      const d1=new Date(e.date),d2=new Date(dateStr);
+      return d1.getDate()===d2.getDate()&&d2>=d1;
+    }
+    return false;
+  });
+}
+
+function selectDate(dateStr){
+  selDate=dateStr;
+  renderCalendar();
+  renderDayDetail(dateStr);
+}
+
+function renderDayDetail(dateStr){
+  const [y,m,d]=dateStr.split('-');
+  document.getElementById('day-detail-title').textContent=`${y}年${m}月${d}日`;
+  const list=document.getElementById('day-events-list');
+  list.innerHTML='';
+  const evs=DB.events[dateStr]||[];
+  evs.forEach(ev=>{
+    const row=document.createElement('div');row.className='day-event-item';
+    row.innerHTML=`<span class="day-event-name">${ev.name}</span>
+      <button class="day-event-del" onclick="delEvent('${dateStr}','${ev.id}')">✕</button>`;
+    list.appendChild(row);
+  });
+  document.getElementById('add-event-btn').style.display='block';
+  document.getElementById('go-schedule-btn').style.display='block';
+}
+
+let _evDate=null;
+function openAddEventModal(){_evDate=selDate;document.getElementById('ev-name').value='';openModal('add-event-overlay');}
+function saveEvent(){
+  const name=document.getElementById('ev-name').value.trim();
+  if(!name||!_evDate)return;
+  if(!DB.events[_evDate])DB.events[_evDate]=[];
+  DB.events[_evDate].push({id:uid(),name});
+  saveDB();closeModal('add-event-overlay');renderDayDetail(_evDate);renderCalendar();
+}
+function delEvent(dateStr,id){
+  DB.events[dateStr]=(DB.events[dateStr]||[]).filter(e=>e.id!==id);
+  saveDB();renderDayDetail(dateStr);renderCalendar();
+}
+
+let _goToDate=null;
+function goToScheduleFromCal(){
+  if(!selDate)return;
+  _goToDate=selDate;
+  const d=new Date(selDate);
+  // find Monday of week
+  let dow=d.getDay();dow=(dow+6)%7;
+  const monday=new Date(d);monday.setDate(d.getDate()-dow);
+  schedWeekStart=monday;
+  showView('schedule');
+}
+
+// =====================================================
+// SCHEDULE
+// =====================================================
+let schedWeekStart=getMonday(new Date());
+
+function getMonday(d){
+  const day=d.getDay(),diff=(day+6)%7;
+  const m=new Date(d);m.setDate(d.getDate()-diff);m.setHours(0,0,0,0);return m;
+}
+function dateToStr(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function schedShiftWeek(d){
+  schedWeekStart=new Date(schedWeekStart);schedWeekStart.setDate(schedWeekStart.getDate()+d*7);
+  renderSchedule();
+}
+function schedGoToday(){schedWeekStart=getMonday(new Date());renderSchedule();}
+
+const DOWS=['一','二','三','四','五','六','日'];
+const HOURS=24;
+const CELL_H=40; // px per hour
+
+function renderSchedule(){
+  const grid=document.getElementById('sched-grid');
+  const label=document.getElementById('sched-week-label');
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(schedWeekStart);d.setDate(d.getDate()+i);
+    days.push(d);
+  }
+  const s=days[0],e=days[6];
+  label.textContent=`${s.getMonth()+1}/${s.getDate()} - ${e.getMonth()+1}/${e.getDate()}`;
+
+  // Build grid: 1 time col + 7 day cols
+  const cols=1+7;
+  grid.style.gridTemplateColumns=`50px repeat(7,1fr)`;
+  grid.innerHTML='';
+
+  // Header row
+  const emptyHead=document.createElement('div');
+  emptyHead.className='sched-col-header';emptyHead.style.borderRight='1px solid var(--border)';
+  grid.appendChild(emptyHead);
+  days.forEach((d,i)=>{
+    const h=document.createElement('div');h.className='sched-col-header';
+    h.innerHTML=`<div class="sched-dow">${DOWS[i]}</div><div class="sched-date">${d.getMonth()+1}/${d.getDate()}</div>`;
+    if(i<6)h.style.borderRight='1px solid var(--border)';
+    grid.appendChild(h);
+  });
+
+  // Time + day columns body
+  // We build a wrapper row for the body
+  const timeCol=document.createElement('div');
+  timeCol.className='sched-time-col';
+  timeCol.style.gridRow='2';timeCol.style.gridColumn='1';
+  for(let h=0;h<HOURS;h++){
+    const tc=document.createElement('div');tc.className='sched-time-cell';
+    tc.textContent=`${String(h).padStart(2,'0')}:00`;
+    timeCol.appendChild(tc);
+  }
+  grid.appendChild(timeCol);
+
+  days.forEach((d,di)=>{
+    const dateStr=dateToStr(d);
+    const col=document.createElement('div');
+    col.className='sched-day-col';
+    col.style.height=(HOURS*CELL_H)+'px';
+    col.style.gridRow='2';col.style.gridColumn=(di+2).toString();
+    // hour lines
+    for(let h=0;h<HOURS;h++){
+      const line=document.createElement('div');line.className='sched-hour-line';
+      line.style.top=(h*CELL_H)+'px';col.appendChild(line);
+      const half=document.createElement('div');half.className='sched-hour-half';
+      half.style.top=(h*CELL_H+CELL_H/2)+'px';col.appendChild(half);
+    }
+    // click zone
+    const cz=document.createElement('div');cz.className='sched-click-zone';
+    cz.addEventListener('click',ev=>{
+      const rect=col.getBoundingClientRect();
+      const y=ev.clientY-rect.top;
+      const totalMins=Math.round((y/CELL_H)*60/10)*10;
+      const hh=Math.floor(totalMins/60),mm=totalMins%60;
+      openSchedModal(dateStr,`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`);
+    });
+    col.appendChild(cz);
+    // events
+    const evs=getSchedEventsForDate(dateStr);
+    evs.forEach(ev=>{
+      const [sh,sm]=ev.start.split(':').map(Number);
+      const [eh,em]=ev.end.split(':').map(Number);
+      const top=(sh*60+sm)/60*CELL_H;
+      const height=Math.max(((eh*60+em)-(sh*60+sm))/60*CELL_H,16);
+      const el=document.createElement('div');
+      el.className='sched-event'+(ev.type==='goal'?' type-goal':'');
+      el.style.top=top+'px';el.style.height=height+'px';
+      el.innerHTML=`<div class="sched-event-name">${ev.name}</div><div class="sched-event-time">${ev.start}-${ev.end}</div>`;
+      el.addEventListener('click',e=>{e.stopPropagation();editSchedEvent(ev,dateStr);});
+      col.appendChild(el);
+    });
+    grid.appendChild(col);
+  });
+  grid.style.gridTemplateRows='auto 1fr';
+}
+
+let _smEditId=null;
+function openSchedModal(dateStr,startTime,isGoal=false){
+  _smEditId=null;
+  document.getElementById('sched-modal-title').textContent=isGoal?'新增目標':'新增行程';
+  document.getElementById('sm-name').value='';
+  document.getElementById('sm-date').value=dateStr||dateToStr(new Date());
+  document.getElementById('sm-start').value=startTime||'08:00';
+  document.getElementById('sm-end').value='';
+  document.getElementById('sm-repeat').value='none';
+  document.getElementById('sm-note').value='';
+  document.getElementById('sm-edit-id').value='';
+  openModal('sched-modal-overlay');
+}
+function editSchedEvent(ev,dateStr){
+  _smEditId=ev.id;
+  document.getElementById('sched-modal-title').textContent='編輯行程';
+  document.getElementById('sm-name').value=ev.name;
+  document.getElementById('sm-date').value=ev.date||dateStr;
+  document.getElementById('sm-start').value=ev.start;
+  document.getElementById('sm-end').value=ev.end;
+  document.getElementById('sm-repeat').value=ev.repeat||'none';
+  document.getElementById('sm-note').value=ev.note||'';
+  document.getElementById('sm-edit-id').value=ev.id;
+  openModal('sched-modal-overlay');
+}
+function saveSchedEvent(){
+  const name=document.getElementById('sm-name').value.trim();
+  const date=document.getElementById('sm-date').value;
+  const start=document.getElementById('sm-start').value;
+  const end=document.getElementById('sm-end').value;
+  const repeat=document.getElementById('sm-repeat').value;
+  const note=document.getElementById('sm-note').value;
+  const editId=document.getElementById('sm-edit-id').value;
+  if(!name||!date||!start||!end)return;
+  if(editId){
+    const ev=DB.schedEvents.find(e=>e.id===editId);
+    if(ev){Object.assign(ev,{name,date,start,end,repeat,note});}
+  }else{
+    DB.schedEvents.push({id:uid(),name,date,start,end,repeat,note,type:'event'});
+  }
+  saveDB();closeModal('sched-modal-overlay');renderSchedule();renderCalendar();
+}
+
+// =====================================================
+// BOOKSHELF
+// =====================================================
+const SPINE_COLORS=['#7a5c3a','#5c3d1a','#9c7244','#4a6741','#4a5c7a','#7a4a5c','#5c5c3a','#3a5c5c'];
+
+function renderShelves(){
+  const con=document.getElementById('shelves-container');
+  con.innerHTML='';
+  if(!DB.shelves.length){
+    const msg=document.createElement('div');
+    msg.style.cssText='text-align:center;color:var(--text-mute);padding:40px;font-size:.85rem';
+    msg.textContent='尚無書櫃，點選「書櫃格」新增';
+    con.appendChild(msg);return;
+  }
+  DB.shelves.forEach(shelf=>con.appendChild(buildShelfEl(shelf)));
+  // update book shelf select
+  updateShelfSelect();
+}
+
+function buildShelfEl(shelf){
+  const unit=document.createElement('div');unit.className='shelf-unit';
+  const labelRow=document.createElement('div');labelRow.className='shelf-label-row';
+  const nameEl=document.createElement('input');
+  nameEl.className='shelf-name';nameEl.value=shelf.name||'書櫃';nameEl.placeholder='書櫃名稱';
+  nameEl.addEventListener('change',()=>{shelf.name=nameEl.value;saveDB();});
+  const detailBtn=document.createElement('button');
+  detailBtn.style.cssText='border:1px solid rgba(200,170,130,.3);background:transparent;color:#c9a882;padding:3px 10px;border-radius:12px;font-size:.75rem;cursor:pointer;font-family:var(--font-serif)';
+  detailBtn.textContent='管理書本';
+  detailBtn.addEventListener('click',()=>openShelfDetail(shelf));
+  labelRow.appendChild(nameEl);labelRow.appendChild(detailBtn);
+  unit.appendChild(labelRow);
+
+  const row=document.createElement('div');row.className='shelf-row';
+  const displayIds=shelf.bookIds||[];
+  const MAX=6;
+  displayIds.slice(0,MAX).forEach(bookId=>{
+    const book=DB.books.find(b=>b.id===bookId);
+    if(!book)return;
+    const spine=buildSpineEl(book);
+    row.appendChild(spine);
+  });
+  // empty spots
+  const remaining=Math.max(0,MAX-(displayIds.slice(0,MAX).length));
+  for(let i=0;i<remaining;i++){
+    const spot=document.createElement('div');spot.className='shelf-add-spot';
+    spot.textContent='+';
+    spot.addEventListener('click',()=>{openShelfDetail(shelf);});
+    row.appendChild(spot);
+  }
+  const board=document.createElement('div');board.className='shelf-board';
+  row.appendChild(board);
+  unit.appendChild(row);
+  return unit;
+}
+
+function buildSpineEl(book){
+  const spine=document.createElement('div');
+  spine.className='book-spine';
+  spine.style.background=book.color||SPINE_COLORS[0];
+  // gradient for realism
+  spine.style.background=`linear-gradient(to right, ${darken(book.color||SPINE_COLORS[0],.2)}, ${book.color||SPINE_COLORS[0]}, ${lighten(book.color||SPINE_COLORS[0],.1)})`;
+  const text=document.createElement('div');text.className='book-spine-text';text.textContent=book.name;
+  spine.appendChild(text);
+  spine.addEventListener('click',()=>openBook(book.id));
+  return spine;
+}
+
+function darken(hex,amt){
+  let c=parseInt(hex.slice(1),16);
+  let r=Math.max(0,((c>>16)&0xff)-Math.round(255*amt));
+  let g=Math.max(0,((c>>8)&0xff)-Math.round(255*amt));
+  let b=Math.max(0,(c&0xff)-Math.round(255*amt));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function lighten(hex,amt){
+  let c=parseInt(hex.slice(1),16);
+  let r=Math.min(255,((c>>16)&0xff)+Math.round(255*amt));
+  let g=Math.min(255,((c>>8)&0xff)+Math.round(255*amt));
+  let b=Math.min(255,(c&0xff)+Math.round(255*amt));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function addShelf(){
+  DB.shelves.push({id:uid(),name:'新書櫃',bookIds:[]});
+  saveDB();renderShelves();
+}
+
+function openShelfDetail(shelf){
+  document.getElementById('shelf-detail-title').textContent=shelf.name||'書櫃';
+  const booksDiv=document.getElementById('shelf-detail-books');
+  booksDiv.innerHTML='';
+  // show all books with toggle
+  DB.books.forEach(book=>{
+    const inShelf=shelf.bookIds.includes(book.id);
+    const card=document.createElement('div');card.className='shelf-book-card';
+    const cover=document.createElement('div');cover.className='shelf-book-cover';
+    cover.style.background=book.color||SPINE_COLORS[0];
+    const totalChaps=book.chapters?book.chapters.length:0;
+    const doneChaps=book.chapters?book.chapters.filter(c=>c.done).length:0;
+    const pct=totalChaps?Math.round(doneChaps/totalChaps*100):0;
+    cover.innerHTML=`<span class="shelf-book-cover-title">${book.name}</span>`;
+    const nameEl=document.createElement('div');nameEl.className='shelf-book-name';nameEl.textContent=book.name;
+    const progEl=document.createElement('div');progEl.className='shelf-book-progress';progEl.textContent=`${pct}%`;
+    // toggle btn
+    const toggleBtn=document.createElement('button');
+    toggleBtn.style.cssText='margin-top:4px;font-size:.65rem;border:1px solid var(--border);background:transparent;padding:2px 6px;border-radius:8px;cursor:pointer;color:var(--text-soft);font-family:var(--font-serif)';
+    toggleBtn.textContent=inShelf?'已上架':'上架';
+    toggleBtn.style.background=inShelf?'var(--brown-dark)':'transparent';
+    toggleBtn.style.color=inShelf?'#fff':'var(--text-soft)';
+    toggleBtn.addEventListener('click',e=>{e.stopPropagation();toggleBookInShelf(shelf,book.id);openShelfDetail(shelf);renderShelves();});
+    cover.addEventListener('click',()=>openBook(book.id));
+    card.appendChild(cover);card.appendChild(nameEl);card.appendChild(progEl);card.appendChild(toggleBtn);
+    booksDiv.appendChild(card);
+  });
+  if(!DB.books.length){
+    booksDiv.innerHTML='<div style="font-size:.8rem;color:var(--text-mute);padding:10px">尚無書籍，請先新增書籍</div>';
+  }
+  document.getElementById('shelf-detail-overlay').classList.add('open');
+}
+function closeShelfDetail(){document.getElementById('shelf-detail-overlay').classList.remove('open');}
+
+function toggleBookInShelf(shelf,bookId){
+  const idx=shelf.bookIds.indexOf(bookId);
+  if(idx>=0)shelf.bookIds.splice(idx,1);
+  else shelf.bookIds.push(bookId);
+  saveDB();
+}
+
+function updateShelfSelect(){
+  const sel=document.getElementById('bk-shelf-select');
+  if(!sel)return;
+  sel.innerHTML='';
+  DB.shelves.forEach(s=>{
+    const o=document.createElement('option');o.value=s.id;o.textContent=s.name||'書櫃';
+    sel.appendChild(o);
+  });
+  if(!DB.shelves.length){
+    const o=document.createElement('option');o.value='';o.textContent='（先新增書櫃）';sel.appendChild(o);
+  }
+}
+
+let _bkColorSel=SPINE_COLORS[0];
+function openAddBookModal(){
+  updateShelfSelect();
+  document.getElementById('bk-name').value='';
+  document.getElementById('bk-desc').value='';
+  _bkColorSel=SPINE_COLORS[0];
+  const picks=document.getElementById('bk-color-picks');
+  picks.innerHTML='';
+  SPINE_COLORS.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.style.cssText=`width:24px;height:24px;border-radius:50%;background:${c};border:2px solid transparent;cursor:pointer`;
+    btn.addEventListener('click',()=>{
+      _bkColorSel=c;
+      picks.querySelectorAll('button').forEach(b=>b.style.borderColor='transparent');
+      btn.style.borderColor='var(--brown-dark)';
+    });
+    if(c===_bkColorSel)btn.style.borderColor='var(--brown-dark)';
+    picks.appendChild(btn);
+  });
+  openModal('add-book-overlay');
+}
+function saveBook(){
+  const name=document.getElementById('bk-name').value.trim();
+  if(!name)return;
+  const desc=document.getElementById('bk-desc').value;
+  const shelfId=document.getElementById('bk-shelf-select').value;
+  const book={id:uid(),name,desc,color:_bkColorSel,shelfId,chapters:[]};
+  DB.books.push(book);
+  // auto add to shelf
+  const shelf=DB.shelves.find(s=>s.id===shelfId);
+  if(shelf&&!shelf.bookIds.includes(book.id))shelf.bookIds.push(book.id);
+  saveDB();closeModal('add-book-overlay');renderShelves();
+}
+
+// =====================================================
+// BOOK READER
+// =====================================================
+let currentBookId=null, currentPage=0;
+
+// Pages:
+// 0: cover (left=cover, right=cover info)
+// 1: toc (left=toc, right=blank or toc continued)
+// 2+: chapter pages (each chapter = 2 pages: left=info, right=notes)
+
+function openBook(bookId){
+  currentBookId=bookId;currentPage=0;
+  const book=DB.books.find(b=>b.id===bookId);
+  if(!book)return;
+  document.getElementById('book-topbar-title').textContent=book.name;
+  renderBookPage();
+  document.getElementById('book-overlay').classList.add('open');
+}
+function closeBook(){document.getElementById('book-overlay').classList.remove('open');renderShelves();}
+function bookFlip(d){
+  const book=DB.books.find(b=>b.id===currentBookId);
+  if(!book)return;
+  const totalPages=2+book.chapters.length; // 0=cover,1=toc,2..=chapters
+  currentPage=Math.max(0,Math.min(totalPages-1,currentPage+d));
+  renderBookPage();
+}
+
+function renderBookPage(){
+  const book=DB.books.find(b=>b.id===currentBookId);
+  const spread=document.getElementById('book-spread');
+  spread.innerHTML=`<div class="book-page left" id="bp-left"></div><div class="book-spine-divider"></div><div class="book-page right" id="bp-right"></div>`;
+  const left=document.getElementById('bp-left');
+  const right=document.getElementById('bp-right');
+  const total=2+book.chapters.length;
+  document.getElementById('book-page-num').textContent=`${currentPage+1} / ${total} 頁`;
+
+  if(currentPage===0){
+    // Cover spread
+    const totalChaps=book.chapters.length;
+    const doneChaps=book.chapters.filter(c=>c.done).length;
+    const pct=totalChaps?Math.round(doneChaps/totalChaps*100):0;
+    left.innerHTML=`
+      <div class="cover-title">${book.name}</div>
+      <div class="cover-progress-bar-wrap">
+        <div class="cover-progress-label">完成進度 ${pct}%</div>
+        <div class="cover-progress-bar"><div class="cover-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="book-desc-box">${book.desc||'（尚無簡介）'}</div>
+    `;
+    right.innerHTML=`
+      <div style="font-size:.8rem;color:var(--text-mute);margin-bottom:10px">作者備註</div>
+      <textarea class="note-area" style="height:calc(100% - 40px)" placeholder="在此記錄...">${book.frontNote||''}</textarea>
+    `;
+    right.querySelector('textarea').addEventListener('change',e=>{book.frontNote=e.target.value;saveDB();});
+  } else if(currentPage===1){
+    // TOC
+    left.innerHTML=`<div class="toc-title">目錄</div><div id="toc-list"></div>`;
+    const tocList=document.getElementById('toc-list');
+    book.chapters.forEach((chap,ci)=>{
+      const item=document.createElement('div');
+      item.className='toc-item'+(chap.type==='sub'?' sub':'');
+      item.innerHTML=`<span class="toc-item-label">${chap.title}</span><span class="toc-check">${chap.done?'✓':''}</span>`;
+      item.addEventListener('click',()=>{currentPage=2+ci;renderBookPage();});
+      tocList.appendChild(item);
+    });
+    right.innerHTML=`<button onclick="openAddChapModal('${book.id}')" style="border:1px dashed var(--border);background:transparent;width:100%;padding:8px;border-radius:8px;font-size:.78rem;color:var(--text-soft);cursor:pointer;font-family:var(--font-serif);margin-bottom:8px">＋ 新增目錄</button>`;
+  } else {
+    // Chapter page
+    const chapIdx=currentPage-2;
+    const chap=book.chapters[chapIdx];
+    if(!chap){left.innerHTML='（無內容）';right.innerHTML='';return;}
+    // Left page
+    left.innerHTML=`
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div class="chap-title">${chap.title}</div>
+        <button class="chap-status-btn ${chap.done?'done':''}" id="chap-done-btn">${chap.done?'已完成':'未完成'}</button>
+      </div>
+      <div class="chap-info-box">
+        <div class="chap-field"><label>任務說明</label><textarea rows="2" id="cf-task" placeholder="說明...">${chap.task||''}</textarea></div>
+        <div class="chap-field"><label>預估時長</label><input type="text" id="cf-dur" placeholder="例：2小時" value="${chap.dur||''}"></div>
+        <div class="chap-field"><label>結束日期</label><input type="date" id="cf-deadline" value="${chap.deadline||''}"></div>
+        <hr class="chap-divider">
+        <div class="chap-field"><label>執行時間</label><input type="text" id="cf-exectime" placeholder="例：09:00-11:00" value="${chap.execTime||''}"></div>
+        <div class="chap-field"><label>執行日期</label><input type="date" id="cf-execdate" value="${chap.execDate||''}"></div>
+        <div class="chap-field"><label>備註</label><textarea rows="2" id="cf-note" placeholder="備註...">${chap.note||''}</textarea></div>
+      </div>
+    `;
+    // events
+    document.getElementById('chap-done-btn').addEventListener('click',()=>{
+      chap.done=!chap.done;saveDB();renderBookPage();
+    });
+    ['task','dur','deadline','exectime','execdate','note'].forEach(f=>{
+      const el=document.getElementById('cf-'+f);
+      if(el)el.addEventListener('change',e=>{
+        const map={task:'task',dur:'dur',deadline:'deadline',exectime:'execTime',execdate:'execDate',note:'note'};
+        chap[map[f]]=e.target.value;saveDB();
+      });
+    });
+    // Right page - notes
+    const isEdit=chap._noteEdit||false;
+    right.innerHTML=`
+      <div class="note-pen ${isEdit?'active':''}" id="note-pen-btn" title="編輯">✒️</div>
+      <textarea class="note-area" id="note-area-ta" ${isEdit?'':'readonly'} placeholder="點擊鋼筆進入編輯模式...">${chap.noteContent||''}</textarea>
+    `;
+    document.getElementById('note-pen-btn').addEventListener('click',()=>{
+      chap._noteEdit=!chap._noteEdit;saveDB();renderBookPage();
+    });
+    document.getElementById('note-area-ta').addEventListener('change',e=>{chap.noteContent=e.target.value;saveDB();});
+  }
+}
+
+let _chapBookId=null;
+function openAddChapModal(bookId){_chapBookId=bookId;document.getElementById('chap-title-in').value='';document.getElementById('chap-type-in').value='main';openModal('add-chap-overlay');}
+function saveChapter(){
+  const title=document.getElementById('chap-title-in').value.trim();
+  const type=document.getElementById('chap-type-in').value;
+  if(!title||!_chapBookId)return;
+  const book=DB.books.find(b=>b.id===_chapBookId);
+  if(!book)return;
+  book.chapters.push({id:uid(),title,type,done:false,task:'',dur:'',deadline:'',execTime:'',execDate:'',note:'',noteContent:'',_noteEdit:false});
+  saveDB();closeModal('add-chap-overlay');
+  currentPage=1;renderBookPage();
+}
+
+// =====================================================
+// PLANS
+// =====================================================
+function renderPlans(){
+  const list=document.getElementById('plan-list');
+  list.innerHTML='';
+  DB.cats.forEach(cat=>{
+    const items=DB.plans.filter(p=>p.catId===cat.id);
+    if(!items.length&&cat.id!=='default')return;
+    const sec=document.createElement('div');sec.className='plan-cat';
+    const title=document.createElement('div');title.className='plan-cat-title';
+    title.innerHTML=`<span>${cat.name}</span><span style="font-size:.72rem;color:var(--text-mute);font-weight:400">${items.filter(p=>p.done).length}/${items.length}</span>`;
+    sec.appendChild(title);
+    items.forEach(plan=>{
+      const row=buildPlanItem(plan);sec.appendChild(row);
+    });
+    list.appendChild(sec);
+  });
+  if(!DB.plans.length){
+    list.innerHTML='<div style="text-align:center;color:var(--text-mute);padding:40px;font-size:.85rem">尚無計畫，點選「新增計畫」</div>';
+  }
+}
+function buildPlanItem(plan){
+  const row=document.createElement('div');row.className='plan-item';
+  const cb=document.createElement('div');cb.className='plan-cb'+(plan.done?' checked':'');
+  cb.addEventListener('click',()=>{plan.done=!plan.done;if(plan.done)plan.doneAt=new Date().toISOString();saveDB();renderPlans();});
+  const body=document.createElement('div');body.className='plan-item-body';
+  const title=document.createElement('div');title.className='plan-item-title'+(plan.done?' done':'');title.textContent=plan.name;
+  const meta=document.createElement('div');meta.className='plan-item-meta';
+  const parts=[];
+  if(plan.dur)parts.push(`預估 ${plan.dur} 小時`);
+  if(plan.deadline)parts.push(`期限 ${plan.deadline}`);
+  if(plan.done&&plan.doneAt)parts.push(`完成於 ${plan.doneAt.slice(0,10)}`);
+  meta.textContent=parts.join('　');
+  const del=document.createElement('button');del.className='plan-item-del';del.textContent='✕';
+  del.addEventListener('click',()=>{DB.plans=DB.plans.filter(p=>p.id!==plan.id);saveDB();renderPlans();});
+  body.appendChild(title);if(meta.textContent)body.appendChild(meta);
+  row.appendChild(cb);row.appendChild(body);row.appendChild(del);
+  return row;
+}
+
+function openAddPlanModal(){
+  document.getElementById('pl-name').value='';
+  document.getElementById('pl-dur').value='';
+  document.getElementById('pl-deadline').value='';
+  document.getElementById('pl-note').value='';
+  const sel=document.getElementById('pl-cat-select');sel.innerHTML='';
+  DB.cats.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o);});
+  openModal('add-plan-overlay');
+}
+function savePlan(){
+  const name=document.getElementById('pl-name').value.trim();
+  if(!name)return;
+  DB.plans.push({
+    id:uid(),name,
+    catId:document.getElementById('pl-cat-select').value||'default',
+    dur:document.getElementById('pl-dur').value,
+    deadline:document.getElementById('pl-deadline').value,
+    note:document.getElementById('pl-note').value,
+    done:false,doneAt:null
+  });
+  saveDB();closeModal('add-plan-overlay');renderPlans();
+}
+
+function openAddCatModal(){document.getElementById('cat-name-in').value='';openModal('add-cat-overlay');}
+function saveCategory(){
+  const name=document.getElementById('cat-name-in').value.trim();
+  if(!name)return;
+  DB.cats.push({id:uid(),name});
+  saveDB();closeModal('add-cat-overlay');renderPlans();
+}
+
+// =====================================================
+// MODAL HELPERS
+// =====================================================
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+});
+document.getElementById('shelf-detail-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('shelf-detail-overlay'))closeShelfDetail();
+});
+
+// =====================================================
+// INIT
+// =====================================================
+// Ensure default shelf exists
+if(!DB.shelves.length){DB.shelves.push({id:'s1',name:'主書櫃',bookIds:[]});saveDB();}
+showView('calendar');
+document.querySelectorAll('.nav-btn')[0].classList.add('active');
+</script>
+</body>
+</html>
